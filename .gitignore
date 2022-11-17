@@ -1,0 +1,9 @@
+venv
+src/.env
+src/cache.txt
+
+.idea
+__pycache__
+
+output/*
+!output/empty
