@@ -1,0 +1,37 @@
+.map-canvas {
+    background: url("../../img/map_square.png") no-repeat;
+}
+
+div.floating-banner {
+  width: 200px;
+  height: 60px;
+  position: absolute;
+  top: 40vh;
+  left: 40vw;
+  z-index: 10;
+  padding: 40px;
+  background-color: white;
+  display: none;
+}
+
+.grid-table {
+   display: grid;
+   grid-template-columns: 1122px auto;
+}
+
+.control-panel {
+}
+
+.grid-timer-times {
+   display: grid;
+   grid-template-columns: 80px auto 80px;
+}
+
+.grid-timer-times div {
+    text-align: center;
+}
+
+.grid-control-btn {
+    display: grid;
+   grid-template-columns: auto 80px;
+}

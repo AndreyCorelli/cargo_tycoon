@@ -87,5 +87,16 @@ def make_default_map_descriptor() -> MapDescriptor:
                          1841, 974, [london_pivot, tbilisi_pivot])
 
 
+def make_square_map_descriptor() -> MapDescriptor:
+    dublin_pivot = GeoPivot(53.3244431, -6.385786, 182, 353)
+    istanbul_pivot = GeoPivot(41.0055005, 28.7319977, 1065, 812)
+
+    return MapDescriptor(os.path.join(IMAGES_PATH, "map_square.png"),
+                         1122, 976, [dublin_pivot, istanbul_pivot])
+
+
 # mapping for /src/img/map.png
 default_map = make_default_map_descriptor()
+
+# mapping for /src/img/map_square.png
+square_map = make_square_map_descriptor()

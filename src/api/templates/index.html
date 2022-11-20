@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sennder keeps trucking</title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <script type="text/javascript" src="js/map.js"></script>
+  </head>
+  <body onload="setupPage()">
+    <div id="loading-banner" class="floating-banner">LOADING ...</div>
+
+    <div class="grid-table">
+      <canvas width="1122" height="976" class="map-canvas"></canvas>
+
+      <div class="control-panel">
+
+        <div class="grid-timer-times">
+          <div id="label-time-start">-<br/>-</div>
+          <div id="label-time-current">-<br/>-</div>
+          <div id="label-time-end">-<br/>-</div>
+        </div>
+
+        <input type="range" id="play-track"
+               style="width:100%"
+               min="0" max="50">
+        <br/>
+        <div class="grid-control-btn">
+          <div><input type="button" id="btn-start-stop"
+                      style="enabled:false"
+                      value="start" /></div>
+        </div>
+      </div>
+    </div>
+
+
+    <script type="text/javascript">
+    	function setupPage() {
+    		window.pageManager = new MapManager();
+    		window.pageManager.queryTracks();
+    	}
+    </script>
+  </body>
+</html>
