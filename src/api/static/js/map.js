@@ -251,8 +251,17 @@ class MapManager {
             this.ctx.lineWidth = thicks[i];
             this.ctx.strokeStyle = color;
             this.ctx.moveTo(points[0][0], points[0][1]);
+
             for (let j = 1; j < points.length; j++) {
-                this.ctx.lineTo(points[j][0], points[j][1]);
+                if (points[j-1][0] == 0 && points[j-1][1] == 0) {
+                    this.ctx.stroke();
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(points[j][0], points[j][1]);
+                }
+                else {
+                    if (points[j][0] && points[j][1])
+                        this.ctx.lineTo(points[j][0], points[j][1]);
+                }
             }
             this.ctx.stroke();
         }

@@ -43,7 +43,7 @@ class PageDataSource:
             start_time_utc,
             end_time_utc
         )
-        data = TrackBagJsonSerializer.serialize(track_bag)
+        data = TrackBagJsonSerializer.serialize(self.geo_map, track_bag)
         self.cache_data(start_time_utc, end_time_utc, data)
         return data
 
