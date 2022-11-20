@@ -1,7 +1,7 @@
 import datetime
 
 import pytz
-from flask import current_app as app
+from flask import current_app as app, make_response
 from flask import render_template
 
 from maps.map_descriptor import square_map
@@ -22,7 +22,6 @@ def index():
 def track_data():
     # year = request.args.get('year', datetime.date.today().year)
     # week = request.args.get('week', 0)
-
     data_source = PageDataSource(
         square_map,
     )
@@ -30,4 +29,6 @@ def track_data():
         datetime.datetime(2022, 10, 13, 7, 0, 0, 0, pytz.UTC),
         datetime.datetime(2022, 10, 26, 7, 0, 0, 0, pytz.UTC)
     )
-    return track_data
+    response = make_response(track_data, 200)
+    response.mimetype = "text/plain"
+    return response

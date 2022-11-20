@@ -1,3 +1,90 @@
+class PlainTextParser {
+    constructor() {
+        this.i = 0;
+        this.buffer = '';
+    }
+
+    parseResponse(txt) {
+        if (!txt) return null;
+        let data = {
+            start_time_stamp: this.getNextToken(txt).value,
+            end_time_stamp: this.getNextToken(txt).value,
+            start_time_min: this.getNextToken(txt).value,
+            end_time_min: this.getNextToken(txt).value,
+            tracks: []
+        };
+
+        let track = null;
+        while (true) {
+            let token = this.getNextToken(txt);
+            if (!token) break;
+
+            if (!track) {
+                track = {id: token.value, points: []};
+                continue;
+            }
+
+            if (token.delimiter == '#') {
+                data.tracks.push(track);
+                track = null;
+                continue;
+            }
+
+            if (!track.points.length) {
+                track.points.push([token.value]);
+                continue;
+            }
+
+            let lastPoint = track.points[track.points.length - 1];
+            if (lastPoint.length == 3) {
+                track.points.push([token.value]);
+                continue;
+            }
+            lastPoint.push(token.value);
+        }
+        this.accumulateTrackTimes(data.tracks);
+        return data;
+    }
+
+    getNextToken(txt) {
+        while (true) {
+            if (this.i == txt.length)
+                return null;
+            let token = {
+                value: null,
+                delimiter: ''
+            };
+            if (txt[this.i] == ',') {
+                token.value = parseInt(this.buffer);
+                this.buffer = '';
+                this.i += 1;
+                return token;
+            }
+            if (txt[this.i] == '#') {
+                token.delimiter = '#';
+                this.buffer = '';
+                this.i += 1;
+                return token;
+            }
+            this.buffer += txt[this.i];
+            this.i += 1;
+        }
+    }
+
+    accumulateTrackTimes(tracks) {
+        for (let i = 0; i < tracks.length; i++) {
+            let track = tracks[i];
+
+            let currentTime = track.points[0][0];
+            for (let j = 1; j < track.points.length; j++) {
+                currentTime += track.points[j][0];
+                track.points[j][0] = currentTime;
+            }
+        }
+    }
+}
+
+
 class MapManager {
     constructor() {
         this.animation = false;
@@ -54,6 +141,7 @@ class MapManager {
         // ${encodeURIComponent(prefix)}
         let uri = `track_data?year=2022&week=30`;
         let that = this;
+        console.log('query data');
 
         this.stopAnimation();
         this.animationPrepared = false;
@@ -64,7 +152,7 @@ class MapManager {
         fetch(uri, {method: "GET"})
         .then(function (response) {
             that.showHideLoadingBanner(false);
-            return response.json();
+            return response.text();
         })
         .then(function (json) {
             that.prepareAnimation(json);
@@ -74,16 +162,19 @@ class MapManager {
         });
     }
 
-    prepareAnimation(json) {
-        this.tracks = json.data;
+    prepareAnimation(respText) {
+        let parser = new PlainTextParser();
+        let data = parser.parseResponse(respText);
+        this.tracks = data.tracks;
+
         this.timing = {
-            startMinute: json.start_time_min,
-            endMinute: json.end_time_min,
-            startTime: new Date(json.start_time_stamp * 1000),
-            endTime: new Date(json.end_time_stamp * 1000),
-            startTimestamp: json.start_time_stamp,
-            endTimestamp: json.end_time_stamp,
-            currentMinute: json.start_time_min
+            startMinute: data.start_time_min,
+            endMinute: data.end_time_min,
+            startTime: new Date(data.start_time_stamp * 1000),
+            endTime: new Date(data.end_time_stamp * 1000),
+            startTimestamp: data.start_time_stamp,
+            endTimestamp: data.end_time_stamp,
+            currentMinute: data.start_time_min
         };
         this.setScale();
         this.animationPrepared = true;
@@ -205,16 +296,16 @@ class MapManager {
     }
 
     drawTrack(track, frameTime, tailTime, bodyTime) {
-        let firstPointTime = track[1][0][0];
+        let firstPointTime = track.points[0][0];
         if (firstPointTime > frameTime)
             return;
-        let lastPointTime = track[1][track[1].length - 1][0];
+        let lastPointTime = track.points[track.points.length - 1][0];
         if (lastPointTime < tailTime)
             return;
 
         let tailPoints = [], bodyPoints = [];
-        for (let i = 0; i < track[1].length; i++) {
-            let point = track[1][i];
+        for (let i = 0; i < track.points.length; i++) {
+            let point = track.points[i];
             let tm = point[0];
             // TODO: use simple optimization to find a start and the end indices
             if (tm < tailTime) continue;
@@ -226,7 +317,7 @@ class MapManager {
             bodyPoints.push([point[1], point[2]]);
         }
         if (!tailPoints.length && !bodyPoints.length) return;
-        let color = this.pickColorByTrackIndex(track[0]);
+        let color = this.pickColorByTrackIndex(track.id);
         this.drawTrackOnCanvas(color, tailPoints, bodyPoints);
     }
 

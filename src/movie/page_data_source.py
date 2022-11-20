@@ -25,17 +25,17 @@ class PageDataSource:
     def get_track(
             self,
             start_time_utc: datetime.datetime,
-            end_time_utc: datetime.datetime) -> Dict[Any, Any]:
+            end_time_utc: datetime.datetime) -> str:
         data = self.get_cached_data(start_time_utc, end_time_utc)
         if not data:
             data = self.read_data_from_server(start_time_utc, end_time_utc)
-        self._set_data_timings(data, start_time_utc, end_time_utc)
+        data = self._set_data_timings(data, start_time_utc, end_time_utc)
         return data
 
     def read_data_from_server(
             self,
             start_time_utc: datetime.datetime,
-            end_time_utc: datetime.datetime) -> Dict[Any, Any]:
+            end_time_utc: datetime.datetime) -> str:
         engine = sqlalchemy.create_engine(settings.db_uri)
         repo = TrackRepository(engine)
         track_bag = repo.load_tracks(
@@ -50,20 +50,19 @@ class PageDataSource:
     def cache_data(self,
                    start_time_utc: datetime.datetime,
                    end_time_utc: datetime.datetime,
-                   data: Dict[Any, Any]) -> None:
+                   data: str) -> None:
         file_path = self._get_cache_file_path(start_time_utc, end_time_utc, False)
         with open(file_path, 'w') as f:
-            json.dump(data, f)
+            f.write(data)
 
     def get_cached_data(self, start_time_utc: datetime.datetime,
-                        end_time_utc: datetime.datetime) -> Optional[Dict[Any, Any]]:
+                        end_time_utc: datetime.datetime) -> Optional[str]:
         file_path = self._get_cache_file_path(start_time_utc, end_time_utc, True)
         if not file_path:
             return None
         # read file and deserialize
         with open(file_path) as f:
-            data = json.load(f)
-            return data
+            return f.read()
 
     @classmethod
     def _get_cache_file_path(cls,
@@ -84,11 +83,11 @@ class PageDataSource:
     @classmethod
     def _set_data_timings(
             cls,
-            data: Dict[Any, Any],
+            data: str,
             start_time_utc: datetime.datetime,
             end_time_utc: datetime.datetime):
-        data["start_time_stamp"] = time_to_timespan(start_time_utc)
-        data["end_time_stamp"] = time_to_timespan(end_time_utc)
-        data["start_time_min"] = time_to_minutes(start_time_utc)
-        data["end_time_min"] = time_to_minutes(end_time_utc)
-        return data
+        prefix = f"{time_to_timespan(start_time_utc)}," + \
+                 f"{time_to_timespan(end_time_utc)}," + \
+                 f"{time_to_minutes(start_time_utc)}," + \
+                 f"{time_to_minutes(end_time_utc)},"
+        return prefix + data

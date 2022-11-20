@@ -51,5 +51,7 @@ class TrackRepository:
                     track_time=track_time.astimezone(pytz.utc)
                 ), tracker_id)
             start = query_end
+        # for track in tracks.track_by_id.values():
+        #     track.points.sort(key=lambda p: p.track_time)
 
         return tracks
