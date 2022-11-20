@@ -26,18 +26,18 @@ class MapManager {
         this.drawingSettings = {
             trackBodyLenMinutes: 1*60,
             trackTailLenMinutes: 4*60,
-            colors: [
-            '#e02020',
-            '#906020',
-            '#409020',
-            '#20e020',
-            '#209040',
-            '#206060',
-            '#204090',
-            '#2060e0']
+            colors: ['#e02020', '#906020', '#409020',
+                     '#20e020', '#209040', '#206060',
+                     '#204090', '#2060e0']
         };
 
         this.timerControl = document.querySelector('#play-track');
+        this.timerControl.oninput = () => { this.onSetTracker(); };
+        this.playSpeedControl = document.querySelector('#play-speed');
+        this.playSpeedControl.oninput = () => { this.setPlaySpeed(); };
+        this.animationSpeedLabel = document.querySelector('#animation-speed-label');
+        this.animationSpeedLabel.innerText = '' + this.timeStepMinutes;
+
         this.bannerControl = document.querySelector('#loading-banner');
         this.labelTimeStart = document.querySelector('#label-time-start');
         this.labelTimeEnd = document.querySelector('#label-time-end');
@@ -143,6 +143,17 @@ class MapManager {
             this.getTimeFromMinute(this.timerControl.min));
         this.labelTimeEnd.innerHTML = this.getTimeString(
             this.getTimeFromMinute(this.timerControl.max));
+    }
+
+    onSetTracker() {
+        if (!this.animationPrepared)
+            return;
+        this.goToFrame(parseInt(this.timerControl.value));
+    }
+
+    setPlaySpeed() {
+        this.timeStepMinutes = parseInt(this.playSpeedControl.value);
+        this.animationSpeedLabel.innerText = '' + this.timeStepMinutes;
     }
 
     goToFrame(frameTime, updateTrackPosition) {
