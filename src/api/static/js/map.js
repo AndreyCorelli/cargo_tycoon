@@ -1,5 +1,9 @@
 class MapManager {
     constructor() {
+        this.periodSelector = new PeriodSelector();
+        this.periodSelector.onPeriodSelected =
+            (start, end) => { this.onPeriodSelected(start, end); };
+
         this.animation = false;
         this.animationPrepared = false;
         this.tracks = [];
@@ -50,11 +54,9 @@ class MapManager {
         this.timeFmt = { hour12: false, hour: '2-digit', minute: '2-digit' };
     }
 
-    queryTracks(prefix) {
-        // ${encodeURIComponent(prefix)}
-        let uri = `track_data?year=2022&week=30`;
+    onPeriodSelected(start, end) {
+        let uri = `track_data?start_date=${start}&end_date=${end}`;
         let that = this;
-        console.log('query data');
 
         this.stopAnimation();
         this.animationPrepared = false;
@@ -123,7 +125,8 @@ class MapManager {
     }
 
     timeForward() {
-        if (this.timing.currentMinute == this.timing.endMinute) {
+        if (this.timing.currentMinute >= this.timing.endMinute) {
+            console.log('Stop animation');
             this.stopAnimation();
             return false;
         }

@@ -4,6 +4,7 @@
     <title>Sennder keeps trucking</title>
     <link rel="stylesheet" href="/css/main.css" />
     <script type="text/javascript" src="js/text_parser.js"></script>
+    <script type="text/javascript" src="js/period_selector.js"></script>
     <script type="text/javascript" src="js/map.js"></script>
   </head>
   <body onload="setupPage()">
@@ -34,6 +35,9 @@
         <input type="range" id="play-speed"
                style="width:100%"
                min="5" max="180" step="5" value="30">
+        <br />
+        <div class="grid-period-selector" id="period-selector">
+        </div>
       </div>
     </div>
 
@@ -41,7 +45,6 @@
     <script type="text/javascript">
     	function setupPage() {
     		window.pageManager = new MapManager();
-    		window.pageManager.queryTracks();
     	}
     </script>
   </body>

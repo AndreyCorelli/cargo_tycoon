@@ -33,5 +33,26 @@ div.floating-banner {
 
 .grid-control-btn {
     display: grid;
-   grid-template-columns: auto 80px;
+    grid-template-columns: auto 80px;
+}
+
+.grid-period-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    grid-gap: .5em;
+}
+
+.grid-period-selector div {
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #bebebe;
+}
+
+.grid-period-selector div:hover {
+    text-align: center;
+    border: 1px solid #999999;
+}
+
+div.period-cached {
+    color: #2020b0;
 }
