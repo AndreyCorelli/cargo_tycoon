@@ -126,7 +126,6 @@ class MapManager {
 
     timeForward() {
         if (this.timing.currentMinute >= this.timing.endMinute) {
-            console.log('Stop animation');
             this.stopAnimation();
             return false;
         }
@@ -138,6 +137,8 @@ class MapManager {
                 setTimeout(() => {
                     this.timeForward();
                 }, this.sleepInterval);
+            else
+                this.stopAnimation();
     }
 
     setScale() {

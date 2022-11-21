@@ -35,7 +35,9 @@ class PeriodSelector {
                 `[data-start="20${period[0]}"]`);
             if (!cell) continue;
             cell.classList.add('period-cached');
+            cell.setAttribute('data-cached', '1');
         }
+        this.setupClickHandler();
     }
 
     setupDateSelectors() {
@@ -60,7 +62,6 @@ class PeriodSelector {
             markup += `${this.formatDateShort(endDate)}${yearPart}</div>`;
         }
         this.container.innerHTML = markup;
-        this.setupClickHandler();
     }
 
     setupClickHandler() {
@@ -68,9 +69,13 @@ class PeriodSelector {
         for (let i = 0; i < cells.length; i++) {
             let cell = cells[i];
             const start = cell.getAttribute('data-start'),
-                  end = cell.getAttribute('data-end');
+                  end = cell.getAttribute('data-end'),
+                  isCached = cell.getAttribute('data-cached');
 
             let confirmText = `Load data from ${start} to ${end}?`;
+            if (!isCached)
+                confirmText = "This interval's not cached, thus loading will take ~3 minutes. " +
+                    `Load data from ${start} to ${end}?`;
             cell.onclick = () => {
                 if (!confirm(confirmText))
                     return;
